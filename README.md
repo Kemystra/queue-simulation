@@ -33,9 +33,8 @@ Each time a PRNG generate a random number, the current state is changed.
 ### Requirements
 
 - 64-bit period (if not available, 32-bit is okay)
-- Accepts an integer as seed
-- Output a 2-dimensional matrix (MxN) of random numbers in the interval [0, 1]
-    - We don't know how big the matrix have to be yet, for now assume it is 1x10
+- Accepts an integer as seed, an another integer as the size M of the result array
+- Output an array of random numbers of size M in the interval [0, 100]
 
 ### Suggested PRNG
 1. `LCG` (Linear Congruential Generator)
