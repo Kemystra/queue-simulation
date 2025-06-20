@@ -1,6 +1,6 @@
-function simulate(&cars)
+function simulate(&vehicles)
     current_time = 0
-    for car=cars
-        disp(car)
+    for v=vehicles
+        disp(v);
     end
 end
