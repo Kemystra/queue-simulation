@@ -1,8 +1,29 @@
+user_input = input_system()
+
+% Process user input, generate random numbers accordingly, and generate a list of cars
+% Note that at this point the Car object must already have its appropriate value
+
+% vehicles = generate_car();
+
+% This is the format of a Vehicle object. Replace zero with the appropriate value when constructing a Vehicle
+vehicle = struct(
+    'iat', 0,
+    'fuelType', 0,
+    'refuelDuration', 0,
+    'arrivalTime', 0,
+    'waitingDuration', 0,
+    'initialLineNumber', 0
+);
+
+simulate(vehicles);
+
+% Print cars data
+table_printing(vehicles);
 
 %   BELOW THIS IS THE RNG SHITEEEEE
 
 number_of_cars = 10;                     % Number of cars to generate, replace this with user input
-selected_prng = 3;                      % Selected PRNG, replace this with user input
+selected_prng = 1;                      % Selected PRNG, replace this with user input
 seed = rand();                          % randomise the seed
 
 randomised = zeros(number_of_cars,3);      % initialise matrix to hold car values
@@ -27,7 +48,7 @@ switch selected_prng
     case 2
         randomised = lcg(seed, number_of_cars);
     case 3
-        randomised = xorshiftr(seed, number_of_cars);
+        randomised = xorshiftrp(seed, number_of_cars);
     otherwise
         error('Invalid PRNG selection');
 end
