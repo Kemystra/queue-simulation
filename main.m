@@ -3,19 +3,8 @@ user_input = input_system()
 % Process user input, generate random numbers accordingly, and generate a list of cars
 % Note that at this point the Car object must already have its appropriate value
 
-% vehicles = generate_car();
-
-% This is the format of a Vehicle object. Replace zero with the appropriate value when constructing a Vehicle
-
-vehicles = [
-    vehicle(2, 'Petrol', 20),
-    vehicle(6, 'Petrol', 40),
-    vehicle(8, 'Diesel', 90),
-    vehicle(9, 'Petrol', 10),
-    vehicle(3, 'Petrol', 5),
-    vehicle(6, 'Petrol', 30),
-    vehicle(10, 'Petrol', 20),
-]
+% This is the format of a Vehicle object. Replace variables with the appropriate value when constructing a Vehicle
+% vehicle = struct('iat', iat,'fuelType', fuelType,'refuelQuantity', refuelQuantity,'arrivalTime', 0,'waitingDuration', 0,'initialLineNumber', 0);
 
 simulate(vehicles);
 
