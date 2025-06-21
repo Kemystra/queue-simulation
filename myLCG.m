@@ -1,14 +1,16 @@
-function mat = myLCG(seed, M)
-    % Fully double-based LCG for FreeMat to avoid integer overflow
+function mat = myLCG(seed,M)
     a = 1664525;
     c = 1013904223;
     m = 2^64;   
-
+    
     state = double(seed);
-    mat = zeros(1, M);   
+    N = 3;                    
+    mat = zeros(M, N);
 
     for i = 1:M
-        state = mod(a * state + c, m);   
-        mat(i) = (state / m) * 100;      
+        for j = 1:N
+            state = mod(a * state + c, m);
+            mat(i, j) = round(abs(state / m) * 99) + 1;
+        end
     end
 end
