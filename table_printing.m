@@ -17,7 +17,7 @@ function table_printing()
     printf('  +--------------------------------------------------------------+ \n');
     printf('\n\n\n'); 
 
-    petrol = {'FuelSave 95', 'V-Power 97', 'FuelSave Disel Euro 5'};  
+    petrol = {'FuelSave 95', 'V-Power 97', 'FuelSave Diesel Euro 5'};  
     petrolProbability = [0.45, 0.35, 0.20]; 
     petrolCDF = [0.45, 0.8, 1.00];
     petrolRange = {'1-45', '46-80', '81-100'}; 
