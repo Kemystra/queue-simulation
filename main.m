@@ -39,15 +39,17 @@ petrol_type_values = cell(1, number_of_cars);
 for i = 1:number_of_cars
     petrol_type_rng(i) = randomised(i);
     petrol_type_values{i} = get_petrol_value(randomised(i));
-    fprintf('Car %d, petrol type: %d, %s \n', i, petrol_type_rng(i), petrol_type_values{i});  
+    fprintf('Car %d, petrol type: %d\n', i, petrol_type_rng(i));  
 end
 
 % initialise array to hold interarrival times
 interarrival_rng = zeros(1, number_of_cars);
+interarrival_values = zeros(1, number_of_cars);
 % fill interarrival rng array
 for i = 1:number_of_cars
     interarrival_rng(i) = randomised(number_of_cars + i);
-    fprintf('Car %d, interarrival time: %d\n', i, interarrival_rng(i));
+    interarrival_values(i) = get_interarrival_value(randomised(number_of_cars + i));
+    fprintf('Car %d, interarrival time: %d, %d\n', i, interarrival_rng(i),interarrival_values(i));
 end
 
 % initialise array to hold refueling time
