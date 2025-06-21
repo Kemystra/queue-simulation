@@ -23,7 +23,7 @@ table_printing(cars);
 %   BELOW THIS IS THE RNG SHITEEEEE
 
 number_of_cars = 10;                     % Number of cars to generate, replace this with user input
-selected_prng = 1;                      % Selected PRNG, replace this with user input
+selected_prng = 2;                      % Selected PRNG, replace this with user input
 seed = rand();                          % randomise the seed
 
 randomised = zeros(number_of_cars,3);      % initialise matrix to hold car values
