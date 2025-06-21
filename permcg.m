@@ -7,9 +7,9 @@ function r = permcg(seed, n)
 
     % Initialize state
     state = uint32(seed);
-    r = zeros(1, n);
+    r = zeros(n,3);
 
-    for k = 1:n
+    for k = 1:n*3
         % Advance state using LCG with modulo 2^32
         state = mod(double(state) * double(multiplier) + double(increment), 2^32);
         state = uint32(state);  % Ensure it's uint32 again
