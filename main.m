@@ -1,24 +1,3 @@
-user_input = input_system()
-
-% Process user input, generate random numbers accordingly, and generate a list of cars
-% Note that at this point the Car object must already have its appropriate value
-
-% cars = generate_car();
-
-% This is the format of a Car object. Replace zero with the appropriate value when constructing a Car
-car = struct(
-    'iat', 0,
-    'fuelType', 0,
-    'refuelDuration', 0,
-    'arrivalTime', 0,
-    'waitingDuration', 0,
-    'initialLineNumber', 0
-);
-
-simulate(cars);
-
-% Print cars data
-table_printing(cars);
 
 %   BELOW THIS IS THE RNG SHITEEEEE
 
@@ -55,10 +34,12 @@ end
 disp(randomised)
 % initialise array to hold petrol type values
 petrol_type_rng = zeros(1, number_of_cars);  
+petrol_type_values = cell(1, number_of_cars);
 % fill petrol type rng array 
 for i = 1:number_of_cars
     petrol_type_rng(i) = randomised(i);
-    fprintf('Car %d, petrol type: %d\n', i, petrol_type_rng(i));
+    petrol_type_values{i} = get_petrol_value(randomised(i));
+    fprintf('Car %d, petrol type: %d, %s \n', i, petrol_type_rng(i), petrol_type_values{i});  
 end
 
 % initialise array to hold interarrival times
