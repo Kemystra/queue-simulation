@@ -2,7 +2,7 @@ function mat = myLCG(seed, M)
 
     a = 1664525;       
     c = 1013904223;     
-    m = 2^64;         
+    m = 2^32;         
 
     state = double(seed);
 
@@ -19,5 +19,5 @@ function mat = myLCG(seed, M)
             % Scale the generated value to the range [1, 100] and store it in the matrix
             mat(i, j) = round(abs(state / m) * 99) + 1;  % Map to range [1, 100]
         end
-    end
+    end 
 end
