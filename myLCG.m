@@ -1,10 +1,11 @@
-function mat = myLCG(seed,M)
+function mat = myLCG(seed, M)
+    % Constants
     a = 1664525;
     c = 1013904223;
-    m = 2^64;   
+    m = 2^32; 
     
     state = double(seed);
-    N = 3;                    
+    N = 3;  % Number of columns
     mat = zeros(M, N);
 
     for i = 1:M
