@@ -1,22 +1,18 @@
-
-%   BELOW THIS IS THE RNG SHITEEEEE
-
-number_of_cars = 10;                     % Number of cars to generate, replace this with user input
-selected_prng = 3;                      % Selected PRNG, replace this with user input
-seed = rand();                          % randomise the seed
+% result format: {car_num, seed, prng_selection};
+[number_of_cars, seed, selected_prng, is_peak_time] = input_system()
 
 randomised = zeros(number_of_cars,3);      % initialise matrix to hold car values
 
 disp(randomised);
 % ARRAY STRUCTURE:
 % For each car we have 3 randomised values, so we will have 3 coloumns of N values in the randomised array
-% For N  number of cars, the first coloumn of the matrix will be for petrol type, 
+% For N  number of cars, the first coloumn of the matrix will be for petrol type,
 % the second coloumn of the matrix will be for interarrival
 % and the third coloumn will be for service time
 
-% eg: for 2 cars, 
+% eg: for 2 cars,
 % [1, 3, 5;
-%  2, 4, 6]  
+%  2, 4, 6]
 % Petrol type = [1,2]
 % Interarrival = [3,4]
 % Service time =[5,6]
@@ -32,32 +28,59 @@ switch selected_prng
         error('Invalid PRNG selection');
 end
 disp(randomised)
-% initialise array to hold petrol type values
-petrol_type_rng = zeros(1, number_of_cars);  
-petrol_type_values = cell(1, number_of_cars);
-% fill petrol type rng array 
-for i = 1:number_of_cars
-    petrol_type_rng(i) = randomised(i);
-    petrol_type_values{i} = get_petrol_value(randomised(i));
-    fprintf('Car %d, petrol type: %d, %s \n', i, petrol_type_rng(i), petrol_type_values{i});  
-end
 
-% initialise array to hold interarrival times
-interarrival_rng = zeros(1, number_of_cars);
+vehicles = []
+
+% The randomized number results is split with array splicing
+
+petrol_type_rng = randomised(:, 1);
+petrol_type_values = zeros(1, number_of_cars);
+
+interarrival_rng = randomised(:, 2);
 interarrival_values = zeros(1, number_of_cars);
-% fill interarrival rng array
-for i = 1:number_of_cars
-    interarrival_rng(i) = randomised(number_of_cars + i);
-    interarrival_values(i) = get_interarrival_value(randomised(number_of_cars + i));
-    fprintf('Car %d, interarrival time: %d, %d\n', i, interarrival_rng(i),interarrival_values(i));
+
+refueling_amount_rng = randomised(:, 3);
+refueling_amount_values = zeros(1, number_of_cars);
+
+if (is_peak_time)
+  % If is peak time, then increase the randomised num for fuel quantity, so that higher fuel quantity is generated
+  refueling_amount_rng = refueling_amount_rng + 20; % Increase by 20;
 end
 
-% initialise array to hold refueling time
-refueling_time_rng = zeros(1, number_of_cars);
-refueling_time_values = zeros(1, number_of_cars);
-% fill refueling time rng array
 for i = 1:number_of_cars
-    refueling_time_rng(i) = randomised(2*number_of_cars + i);
-    refueling_time_values(i) = get_refueling_time_value(randomised(2*number_of_cars + i));
-    fprintf('Car %d, refueling time: %d, %d\n', i, refueling_time_rng(i), refueling_time_values(i));
+    % Get the random number and get the value according to the probability table
+    % Since we have a Nx3 matrix
+    % We can access each row with this syntax
+    petrol_type = get_petrol_value(petrol_type_rng(i));
+    interarrival = get_interarrival_value(interarrival_rng(i));
+    refueling_amount = get_refueling_amount_value(refueling_amount_rng(i));
+
+    % Special case for interarrival time
+    % The first car will always have this value as zero
+    if (i == 1)
+        interarrival = 0;
+    end
+
+    % Save the results into separate arrays for display
+    petrol_type_values(i) = petrol_type;
+    interarrival_values(i) = interarrival;
+    refueling_amount_values(i) = refueling_amount;
+
+    v = create_vehicle(interarrival, interarrival_rng(i), petrol_type, refueling_amount, refueling_amount_rng(i));
+    vehicles = [vehicles, v]
 end
+
+vehicles = simulate(vehicles, number_of_cars);
+
+disp(vehicles);
+
+% Display results (for testing only)
+for i = 1:length(vehicles)
+    fprintf('Vehicle %d: Lane=%d, Pump=%d, InterArrival Time=%d, Arrival=%.1f, Wait=%.1f, Service Duration=%d\n', ...
+            i, vehicles(i).lane, vehicles(i).pump, vehicles(i).iat, ...
+            vehicles(i).arrivalTime, vehicles(i).waitingDuration, ...
+            vehicles(i).serviceDuration);
+end
+
+
+table_printing(vehicles);

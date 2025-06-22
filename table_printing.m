@@ -1,99 +1,163 @@
-function table_printing()
+function table_printing(vehicles)
 
-    IAT = [2, 4, 6, 8, 10];  
-    IATProbability = [0.2, 0.25, 0.25, 0.2, 0.1]; 
-    IATcdf = [0.20, 0.45, 0.70, 0.90, 1.00];
-    IATrange = {'1-20', '21-45', '46-70', '71-90', '91-100'}; 
+    petrolPrice = [2.05, 3.07, 2.74];
+    countFS95 = 0;
+    countVP97 = 0;
+    countDiesel = 0;
+    totalRefuelQuantity = 0; 
+    maxRefuelQuantity = 0; 
 
-    printf('           ===Probability table: Inter-Arrival Time===\n'); 
-    printf('  +--------------------------------------------------------------+ \n');
-    printf('  | Inter-Arrival Time | Probability | CDF | Random Number Range | \n');
-    printf('  +--------------------------------------------------------------+ \n');
+    printf('\n\n  ========  Results of Simulation  ========\n\n'); 
+    printf('  +==============================================================================================================================================+\n');
+    printf('  | Vehicle Number |        Type of Petrol        | Quantity (litre) | Total Price (RM) | Random Num for Inter-Arrival Time | Inter-Arrival Time |\n');
+    printf('  +==============================================================================================================================================+\n');
 
-    for i = 1:numel(IAT)
-        printf('  |%11d         | % 8.2f    |%.2f | %13s       |\n', IAT(i), IATProbability(i), IATcdf(i), IATrange{i});
+    for i = 1:length(vehicles)
+        fuel = vehicles(i).fuelType;
+        switch fuel
+            case 'FuelSave 95'
+                price = petrolPrice(1);
+                countFS95 = countFS95 + 1; 
+            case 'V-Power 97'
+                price = petrolPrice(2);
+                countVP97 = countVP97 + 1;
+            case 'FuelSave Diesel Euro 5'
+                price = petrolPrice(3);
+                countDiesel = countDiesel + 1; 
+            otherwise
+                price = 0;
+        end
+
+        if vehicles(i).refuelQuantity > maxRefuelQuantity
+            maxRefuelQuantity = vehicles(i).refuelQuantity;
+        end
+
+        totalRefuelQuantity = totalRefuelQuantity + vehicles(i).refuelQuantity;
+
+        totalPrice = price * vehicles(i).refuelQuantity;
+
+        printf('  | %14d | %27s  | %16.2f | %15.2f  |   %30d  | %18d |\n', ...
+            i, fuel, vehicles(i).refuelQuantity, totalPrice, ...
+            vehicles(i).iatRandomValue, vehicles(i).iat);
     end
 
-    printf('  +--------------------------------------------------------------+ \n');
-    printf('\n\n\n'); 
+    printf('  +==============================================================================================================================================+\n\n');
 
-    petrol = {'FuelSave 95', 'V-Power 97', 'V-Power Racing', 'FuelSave Disel Euro 5', ' FuelSave Diesel Euro 5 B7'};  
-    petrolProbability = [0.3, 0.2, 0.1, 0.2, 0.2]; 
-    petrolCDF = [0.30, 0.5, 0.60, 0.80, 1.00];
-    petrolRange = {'1-30', '31-50', '51-60', '61-80', '81-100'}; 
-    petrolPrice = [2.05, 3.07, 6.04, 2.74, 2.94];
+    %% Arrival Info Table
+    printf('  +===============================================================+\n');
+    printf('  | Arrival Time | Line Number | Random Number for Refueling Time |\n');
+    printf('  +===============================================================+\n');
 
-    printf('                             ===Probability table: Type of Petrol===\n'); 
-    printf('  +-------------------------------------------------------------------------------------------+ \n');
-    printf('  |        Type of Petrol        | Probability | CDF |  Random Number Range | Price Per Litre |\n');
-    printf('  +-------------------------------------------------------------------------------------------+ \n');
-
-    for i = 1:numel(petrol)
-        printf('  |%27s   | % 8.2f    |%1.2f | %10s           |%9d        |\n', petrol{i}, petrolProbability(i), petrolCDF(i), petrolRange{i}, petrolPrice(i));
+    for i = 1:length(vehicles)
+        printf('  | %12d | %11d |  %30d  |\n', ...
+            vehicles(i).arrivalTime, vehicles(i).initialLineNumber, vehicles(i).refuelQuantityRandomValue);
     end
 
-    printf('  +-------------------------------------------------------------------------------------------+ \n');
-    printf('\n\n\n');
+    printf('  +===============================================================+\n\n\n');
 
-    refuel = [2, 4, 6, 8];  
-    refuelProbability = [0.15, 0.25, 0.45, 0.15]; 
-    refuelCDF = [0.15, 0.40, 0.85, 1.00];
-    refuelRange = {'1-15', '16-40', '41-85', '86-100'}; 
+    % tables for the lanes and pumps 
 
-    printf('          ===Probability table: Refueling Time===\n'); 
-    printf('  +------------------------------------------------------+ \n');
-    printf('  | Refueling Time | Probability  | CDF | Rand Num Range | \n');
-    printf('  +------------------------------------------------------+ \n');
 
-    for i = 1:numel(refuel)
-        printf('  |%7d         | % 8.2f     |%1.2f | %10s     |\n', refuel(i), refuelProbability(i), refuelCDF(i), refuelRange{i});
+    lanes = [1, 2]; 
+
+    totalServiceTime = zeros(1, length(lanes));
+    totalVehicleLane = zeros(1, length(lanes)); 
+
+    for l = 1:length(lanes)
+        lane = lanes(l);
+        printf('  ======== Vehicle Pump Table Lane %d ========\n\n', lane); 
+        printf('  +====================================================================================+\n');
+        if lane == 1
+            printf('  | Vehicle Number |              Pump 1             |              Pump 2             |\n');
+        else
+            printf('  | Vehicle Number |              Pump 3             |              Pump 4             |\n');
+        end
+        printf('  +------------------------------------------------------------------------------------+\n');
+        printf('  |                | Refuel Time |  Begin  |   End   | Refuel Time |   Begin   |  End  |\n');
+        printf('  +====================================================================================+\n');
+
+        for i = 1:length(vehicles)
+            v = vehicles(i);
+            if v.lane == lane
+                totalVehicleLane(l) = totalVehicleLane(l) + 1; 
+                totalServiceTime(l) = totalServiceTime(l) + v.serviceDuration;
+
+                printf('  | %14d |', i);
+                for p = 1:2
+                    if v.pump == p
+                        printf('%10.2f   |  %6.2f |  %6.2f |', v.serviceDuration, v.refuelBegins, v.refuelEnds);
+                    else
+                        printf('%10s   |  %6s |  %6s |', '-', '-', '-');
+                    end
+                end
+                printf('\n');
+            end
+        end
+
+        printf('  +====================================================================================+\n\n');
     end
 
-    printf('  +------------------------------------------------------+ \n');
-    printf('\n\n\n');
+    %% Waiting and Time Spent Table
 
-    car_num = [1, 2, 3, 4, 5];  
-    quantity = [0, 0, 0, 0, 0]; 
-    totalPrice = [0, 0, 0, 0, 0];
-    randIAT = [0, 0, 0, 0, 0];
-    arrivalTime = [0, 0, 0, 0, 0];
-    lineNum = [1, 2, 1, 2, 1];  
-    randRefuel = [0, 0, 0, 0, 0];
+    totalWaitTime = 0;
+    totalTimeSpent = 0; 
+    waitingVehicles = 0;
+    maxWaitTime = 0;
 
-    printf('                                                 ===Results of Simulation===\n'); 
-    printf('  +=========================================================================================================================+ \n');
-    printf('  | Vehicle Number |        Type of Petrol        | Quantity (litre) | Total Price (RM) | Random Num for Inter-Arrival Time | \n');
-    printf('  +=========================================================================================================================+ \n');
+    printf('  +============================================+\n');
+    printf('  | Vehicle Number | Waiting Time | Time Spent |\n');
+    printf('  +============================================+\n');
 
-    for i = 1:numel(car_num)
-        printf('  | %7d        | %27s  | %9d        | %9d        | %18d                |\n', car_num(i), petrol{i}, quantity(i), totalPrice(i), randIAT(i));
+    for i = 1:length(vehicles)
+        waitTime = vehicles(i).waitingDuration;
+        timeSpent = vehicles(i).refuelEnds - vehicles(i).arrivalTime;
+
+        totalWaitTime = totalWaitTime + waitTime;
+        totalTimeSpent = totalTimeSpent + timeSpent;
+
+        if waitTime > 0
+            waitingVehicles = waitingVehicles + 1;
+        end
+
+        if waitTime > maxWaitTime
+            maxWaitTime = waitTime;
+        end
+
+        printf('  | %14d |     %8.2f |   %8.2f |\n', i, waitTime, timeSpent);
+    end
+    
+    printf('  +============================================+\n\n\n'); 
+
+
+    % finding and printing the averages
+
+    avgWaitTime = totalWaitTime / length(vehicles);
+    avgTimeSpent = totalTimeSpent / length(vehicles); 
+    probabilityWaitingVehicles = waitingVehicles / length(vehicles);
+    avgRefuelQuantity = totalRefuelQuantity / length(vehicles);
+
+    [maxFuelCount, maxFuelIndex] = max([countFS95, countVP97, countDiesel]); % get the highest number and its index pos 
+    % mostPopularFuel = vehicles(maxFuelIndex).fuelType;
+
+    printf('  Average Time Spent in System: %.2f \n', avgTimeSpent);
+    printf('  Average Waiting Time: %.2f \n', avgWaitTime);
+    printf('  Average Refuel Quantity: %.2f \n', avgRefuelQuantity);
+    printf('  Highest Waiting Time: %d \n', maxWaitTime);
+    printf('  Highest Refueling Time: %d \n', maxRefuelQuantity);
+    printf('  Probability of Vehicles That Has to Wait: %.2f \n', probabilityWaitingVehicles);
+    printf('  Most Popular Fuel: %s \n', vehicles(maxFuelIndex).fuelType);
+
+    for l = 1:length(lanes) % for each lane, rather than both of them at the same time 
+        lane = lanes(l);
+        if totalVehicleLane(l) > 0
+            avgServiceTime = totalServiceTime(l) / totalVehicleLane(l);
+            printf('  Average service time at Lane %d: %.2f \n', lane, avgServiceTime);
+        else
+            printf('  No vehicles at Lane %d.\n', lane);
+        end
     end
 
-    printf('  +=========================================================================================================================+ \n');
-    printf('\n'); 
-
-    printf('  +===============================================================+ \n');
-    printf('  | Arrival Time | Line Number | Random Number for Refueling Time | \n');
-    printf('  +===============================================================+ \n');
-
-    for i = 1:numel(car_num)
-        printf('  | %8d     | %7d     | %15d                  |\n', arrivalTime(i), lineNum(i), randRefuel(i));
-    end
-
-    printf('  +===============================================================+ \n');
-    printf('\n\n\n'); 
+    printf('\n\n');
+end
 
 
-    % printf('                                                 ===Results of Simulation===\n'); 
-    % printf('  +=========================================================================================================================+ \n');
-    % printf('  | Vehicle Number |        Type of Petrol        | Quantity ( | Total Price (RM) | Random Num for Inter-Arrival Time | \n');
-    % printf('  +=========================================================================================================================+ \n');
-
-    % for i = 1:numel(car_num)
-    %     printf('  | %7d        | %27s  | %9d        | %9d        | %18d              |\n', car_num(i), petrol{i}, quantity(i), totalPrice(i), randIAT(i));
-    % end
-
-    % printf('  +=========================================================================================================================+ \n');
-    % printf('\n\n\n'); 
-
-end 
