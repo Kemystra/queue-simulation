@@ -3,7 +3,7 @@
 
 function [car_num, seed, prng_selection, is_peak_time] = get_user_input()
     print_main_banner();
-    printf('Welcome to Queue Simulation\n');
+    fprintf('Welcome to Queue Simulation\n');
 
     while (true)
         car_num = cast(input('Enter no. of cars: '), 'int32');

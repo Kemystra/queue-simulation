@@ -1,5 +1,5 @@
 % result format: {car_num, seed, prng_selection};
-[number_of_cars, seed, selected_prng, is_peak_time] = input_system()
+[number_of_cars, seed, selected_prng, is_peak_time] = input_system();
 
 randomised = zeros(number_of_cars,3);      % initialise matrix to hold car values
 
@@ -27,7 +27,7 @@ switch selected_prng
         error('Invalid PRNG selection');
 end
 
-vehicles = []
+vehicles = [];
 
 % The randomized number results is split with array splicing
 
@@ -65,7 +65,7 @@ for i = 1:number_of_cars
     refueling_amount_values(i) = refueling_amount;
 
     v = create_vehicle(interarrival, interarrival_rng(i), petrol_type, refueling_amount, refueling_amount_rng(i));
-    vehicles = [vehicles, v]
+    vehicles = [vehicles, v];
 end
 
 vehicles = simulate(vehicles, number_of_cars);
