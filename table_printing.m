@@ -18,7 +18,8 @@ function table_printing(vehicles)
     printf('  +==============================================================================================================================================+ \n');
 
     for i = 1:length(vehicles)
-        switch(petrol{i})
+        fuel = vehicles(i).fuelType;
+        switch fuel
             case 'FuelSave 95'
                 price = petrolPrice(1);
             case 'V-Power 97'
@@ -29,10 +30,10 @@ function table_printing(vehicles)
                 price = 0; % false input 
         end
 
-        totalPrice = price * quantity;
+        totalPrice = price * vehicles(i).refuelQuantity;
 
         printf('  | %14d | %27s  | %16.2f | %15.2f   | %30d | %18d |\n', ...
-                i, vehicles(i).fuelType, vehicles(i).refuelQuantity, totalPrice, randIAT(i), vehicles(i).iat);;
+                i, fuel, vehicles(i).refuelQuantity, totalPrice, vehicles.iatRandomValue(i), vehicles(i).iat);;
     end
 
     printf('  +=============================================================================================================================================+ \n');
@@ -43,36 +44,51 @@ function table_printing(vehicles)
     printf('  +===============================================================+ \n');
 
     for i = 1:length(vehicles)
-        printf('  | %12.2f | %11d | %30d |\n', vehicles(i).arrivalTime, vehicles(i).initialLineNumber, randRefuel(i));
+        printf('  | %12.2f | %11d | %30d |\n', vehicles(i).arrivalTime, vehicles(i).initialLineNumber, vehicles.refuelQuantityRandomValue(i));
     end
 
     printf('  +===============================================================+ \n');
     printf('\n\n\n'); 
 
-    pump = 4; 
+    lanes = [1,2]; 
 
-    printf('  ======== Vehicle Pump Table ========\n\n'); 
-    printf('  +================================================================================================================================+ \n');
-    printf('  | Vehicle Number |           Pump 1          |           Pump 2          |            Pump 3         |           Pump 4          | \n');
-    printf('  +--------------------------------------------------------------------------------------------------------------------------------+ \n');
-    printf('  |                | Refuel Time | Begin | End | Refuel Time | Begin | End | Refuel Time | Begin | End | Refuel Time | Begin | End |\n');
-    printf('  +================================================================================================================================+ \n');
+    for lane = lanes
+        printf('  ======== Vehicle Pump Table Lane %d ========\n\n', lane); 
+        printf('  +========================================================================+ \n');
+        printf('  | Vehicle Number |           Pump 1          |           Pump 2          | \n');
+        printf('  +------------------------------------------------------------------------+ \n');
+        printf('  |                | Refuel Time | Begin | End | Refuel Time | Begin | End |\n');
+        printf('  +========================================================================+ \n');
 
-    for i = 1:length(vehicles)
-        for p = 1:4
-        switch()
-        printf('  | %7d        | %27s  | %9d        | %9d        | %18d              |\n', car_num(i), petrol{i}, quantity(i), totalPrice(i), randIAT(i));
+        for i = 1:length(vehicles)
+            v = vehicles(i); 
+
+            if v.lane == lane
+                printf('  | %14d |', i);
+                
+                for p = 1:2
+                    if v.pump == p
+                        printf(' %5.2f | %5.2f | %5.2f |', ...
+                            v.serviceDuration, v.refuelBegins, v.refuelEnds);
+                    else
+                        printf('   -   |   -   |   -   |');
+                    end
+                end
+
+            printf('\n');
+
+            end
+        end
     end
-
-    printf('  +================================================================================================================================+ \n');
-    printf('\n\n\n'); 
 
     printf('  +===========================+ \n');
     printf('  | Waiting Time | Time Spent | \n');
-    printf('  ============================+ \n');
+    printf('  +===========================+ \n');
 
     for i = 1:length(vehicles)
-        printf('  | %12.2f | %11d | %30d |\n', vehicles(i).arrivalTime, vehicles(i).initialLineNumber, randRefuel(i));
+        timeSpent = vehicles.arrivalTime(i) - vehicles.refuelEnds(i); 
+
+        printf('  |     %8.2f |    %8.2f |\n', vehicles.waitingDuration, timeSpent)
     end
 
     printf('  +===========================+ \n');
