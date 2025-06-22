@@ -69,5 +69,5 @@ for i = 1:number_of_cars
 end
 
 vehicles = simulate(vehicles, number_of_cars);
-
+probability_table_print();
 table_printing(vehicles);

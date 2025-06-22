@@ -155,7 +155,7 @@ function table_printing(vehicles)
     printf('  +=====================================================================+\n');
     printf('  | %-40s | %24.2f |\n', 'Average Time Spent in System', avgTimeSpent);
     printf('  | %-40s | %24.2f |\n', 'Average Waiting Time', avgWaitTime);
-    printf('  | %-40s | %24.2f |\n', 'Average Refuel Quantity', avgRefuelQuantity);
+    printf('  | %-40s | %24.2f |\n', 'Average Refuel Quantity (Litres)', avgRefuelQuantity);
     printf('  | %-40s | %24d |\n',   'Highest Waiting Time', maxWaitTime);
     printf('  | %-40s | %24d |\n',   'Highest Refueling Quantity', maxRefuelQuantity);
     printf('  | %-40s | %24.2f |\n', 'Probability of Vehicles That Has to Wait', probabilityWaitingVehicles);
