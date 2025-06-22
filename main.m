@@ -3,7 +3,6 @@
 
 randomised = zeros(number_of_cars,3);      % initialise matrix to hold car values
 
-disp(randomised);
 % ARRAY STRUCTURE:
 % For each car we have 3 randomised values, so we will have 3 coloumns of N values in the randomised array
 % For N  number of cars, the first coloumn of the matrix will be for petrol type,
@@ -27,7 +26,6 @@ switch selected_prng
     otherwise
         error('Invalid PRNG selection');
 end
-disp(randomised)
 
 vehicles = []
 
@@ -71,16 +69,5 @@ for i = 1:number_of_cars
 end
 
 vehicles = simulate(vehicles, number_of_cars);
-
-disp(vehicles);
-
-% Display results (for testing only)
-for i = 1:length(vehicles)
-    fprintf('Vehicle %d: Lane=%d, Pump=%d, InterArrival Time=%d, Arrival=%.1f, Wait=%.1f, Service Duration=%d\n', ...
-            i, vehicles(i).lane, vehicles(i).pump, vehicles(i).iat, ...
-            vehicles(i).arrivalTime, vehicles(i).waitingDuration, ...
-            vehicles(i).serviceDuration);
-end
-
 
 table_printing(vehicles);
