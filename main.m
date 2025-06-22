@@ -1,5 +1,5 @@
 % result format: {car_num, seed, prng_selection};
-[number_of_cars, seed, selected_prng] = input_system()
+[number_of_cars, seed, selected_prng, is_peak_time] = input_system()
 
 randomised = zeros(number_of_cars,3);      % initialise matrix to hold car values
 
@@ -39,8 +39,8 @@ petrol_type_values = zeros(1, number_of_cars);
 interarrival_rng = randomised(:, 2);
 interarrival_values = zeros(1, number_of_cars);
 
-refueling_time_rng = randomised(:, 3);
-refueling_time_values = zeros(1, number_of_cars);
+refueling_amount_rng = randomised(:, 3);
+refueling_amount_values = zeros(1, number_of_cars);
 
 for i = 1:number_of_cars
     % Get the random number and get the value according to the probability table
@@ -48,7 +48,7 @@ for i = 1:number_of_cars
     % We can access each row with this syntax
     petrol_type = get_petrol_value(randomised(i, 1));
     interarrival = get_interarrival_value(randomised(i, 2));
-    refueling_time = get_refueling_time_value(randomised(i, 3));
+    refueling_amount = get_refueling_amount_value(randomised(i, 3));
 
     % Special case for interarrival time
     % The first car will always have this value as zero
@@ -59,9 +59,9 @@ for i = 1:number_of_cars
     % Save the results into separate arrays for display
     petrol_type_values(i) = petrol_type;
     interarrival_values(i) = interarrival;
-    refueling_time_values(i) = refueling_time;
+    refueling_amount_values(i) = refueling_amount;
 
-    v = create_vehicle(interarrival, interarrival_rng(i), petrol_type, refueling_time, refueling_time_rng(i));
+    v = create_vehicle(interarrival, interarrival_rng(i), petrol_type, refueling_amount, refueling_amount_rng(i));
     vehicles = [vehicles, v]
 end
 
