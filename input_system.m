@@ -9,11 +9,13 @@ function [car_num, seed, prng_selection, is_peak_time] = get_user_input()
     car_num = cast(input('Enter no. of cars: '), 'int32');
 
     % Get seed or randomize
+        print_seed_banner();
     seed_decision = getline('Do you want to set your own seed value? [Y/n] : ');
     seed_decision = lower(seed_decision);
     seed = 0;
 
     if (strcmp('y', seed_decision(1)))
+        print_enter_seed_banner();
         seed = uint64(input('Enter your seed value: '));
     elseif (strcmp('n', seed_decision(1)))
         % rand() returns the number in [0,1)
@@ -23,6 +25,7 @@ function [car_num, seed, prng_selection, is_peak_time] = get_user_input()
         return;
     end
 
+    print_peak_banner();
     peak_time_decision = getline('Is this simulation on peak hours? [Y/n] : ');
     peak_time_decision = lower(peak_time_decision);
     is_peak_time = 0;
