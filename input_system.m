@@ -16,6 +16,7 @@ function [car_num, seed, prng_selection, is_peak_time] = get_user_input()
 
     seed = -1;
     while(true)
+        print_seed_banner();
         seed = get_seed_input();
         if (seed == -1)
             disp('Wrong input, expected Y or N');
@@ -26,6 +27,7 @@ function [car_num, seed, prng_selection, is_peak_time] = get_user_input()
 
     is_peak_time = -1;
     while(true)
+        print_peak_banner();
         is_peak_time = get_is_peak_input();
         if (is_peak_time == -1)
             disp('Wrong input, expected Y or N');
@@ -54,6 +56,7 @@ function seed = get_seed_input()
     seed = 0;
 
     if (strcmp('y', seed_decision(1)))
+        print_enter_seed_banner();
         seed = uint64(input('Enter your seed value: '));
     elseif (strcmp('n', seed_decision(1)))
         % rand() returns the number in [0,1)
