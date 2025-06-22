@@ -2,7 +2,8 @@
 % Output: an array of format [number of cars, seed value, PRNG selection]
 
 function [car_num, seed, prng_selection, is_peak_time] = get_user_input()
-    printf('Welcome to Queue Simulator\n');
+    print_main_banner();
+    printf('Welcome to Queue Simulation\n');
 
     % Get number of cars
     car_num = cast(input('Enter no. of cars: '), 'int32');
@@ -38,6 +39,7 @@ function [car_num, seed, prng_selection, is_peak_time] = get_user_input()
 
 
     % Get PRNG selection
+    print_rng_banner();
     disp('Please select a PRNG to use');
     disp('(1) Linear Congruential Generator (LCG)');
     disp('(2) Permuted Congruential Generator (PCG)');
