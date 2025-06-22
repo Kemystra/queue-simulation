@@ -76,3 +76,6 @@ for i = 1:length(vehicles)
             vehicles(i).arrivalTime, vehicles(i).waitingDuration, ...
             vehicles(i).serviceDuration);
 end
+
+
+table_printing(vehicles);
