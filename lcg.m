@@ -1,11 +1,11 @@
 function g = lcg(seed, M)
 
-    a = 1664525;       % set multiplier 
+    a = 1664525;       % set multiplier
     c = 1013904223;    % set increment
     m = 2^32;         % modulus to turn values into 32 bit
 
-    state = uint32(seed*2^32);
- 
+    state = uint32(seed);
+
 
     g = zeros(M, 3);
 
