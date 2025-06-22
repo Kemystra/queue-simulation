@@ -23,7 +23,7 @@ switch selected_prng
     case 2
         randomised = lcg(seed, number_of_cars);
     case 3
-        randomised = xorshiftrp(seed, number_of_cars);
+        randomised = xorshiftr(seed, number_of_cars);
     otherwise
         error('Invalid PRNG selection');
 end
@@ -81,3 +81,6 @@ for i = 1:length(vehicles)
             vehicles(i).arrivalTime, vehicles(i).waitingDuration, ...
             vehicles(i).serviceDuration);
 end
+
+
+table_printing(vehicles);
