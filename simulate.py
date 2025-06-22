@@ -19,10 +19,11 @@ def simulate(vehicles, total_vehicles):
             next_event = 'arrival'
         # Perform arrival, for now just alternate lanes
         if next_event == 'arrival' and not vehicle_finished:
-            selected_lane = i % 2
+            selected_lane = select_lane(lanes)
+            vehicles[i]['lane'] = selected_lane
             time_delta = next_arrival
             vehicles[i]['arrivalTime'] = current_time + time_delta
-            handle_vehicle_arrival(lanes[selected_lane], i, vehicles[i]['serviceDuration'])
+            handle_vehicle_arrival(lanes[selected_lane], i, vehicles)
             update_pump_service_duration(lanes, time_delta)
 
             i += 1
@@ -80,7 +81,8 @@ def get_earliest_departures(lanes):
     return min_time, lane_idx, pump_idx
 
 
-def handle_vehicle_arrival(lane, vehicle_idx, service_duration):
+def handle_vehicle_arrival(lane, v, vehicles):
+    service_duration = vehicles[v]['serviceDuration']
     # Check if pump 1 is idle
     if lane['pumps'][0]['nextDeparture'] == -1:
         # Assign to pump 1
@@ -93,7 +95,8 @@ def handle_vehicle_arrival(lane, vehicle_idx, service_duration):
 
     else:
         # Both pumps busy, add to queue
-        lane['queue'].append(vehicle_idx)
+        lane['queue'].append(v)
+        vehicles[v]['initialLineNumber'] = len(lane['queue'])
 
 
 def handle_vehicle_departure(lane, pump_idx, vehicles):
@@ -104,6 +107,8 @@ def handle_vehicle_departure(lane, pump_idx, vehicles):
 
         # Generate service time for next vehicle
         service_duration = vehicles[v]['serviceDuration']
+
+        vehicles[v]['pump'] = pump_idx
 
         # Assign to the pump that just became free
         lane['pumps'][pump_idx]['nextDeparture'] = service_duration
@@ -123,6 +128,23 @@ def update_pump_service_duration(lanes, time_delta):
                 lanes[i]['pumps'][j]['nextDeparture'] -= time_delta
 
 
+def select_lane(lanes):
+    best_lane = 0
+    best_score = float('inf')
+
+    for i, lane in enumerate(lanes):
+        # Count available (idle) pumps
+        available_pumps = sum(1 for pump in lane['pumps'] if pump['nextDeparture'] == -1)
+
+        score = len(lane['queue']) - available_pumps
+
+        if score < best_score:
+            best_score = score
+            best_lane = i
+
+    return best_lane
+
+
 def vehicle(iat, fuelType, refuelQuantity):
     flowRate = 1
     serviceDuration = refuelQuantity / flowRate
@@ -131,6 +153,8 @@ def vehicle(iat, fuelType, refuelQuantity):
         'iat': iat,
         'fuelType': fuelType,
         'refuelQuantity': refuelQuantity,
+        'lane': 0,
+        'pump': 0,
         'serviceDuration': serviceDuration,
         'arrivalTime': 0,
         'waitingDuration': 0,
