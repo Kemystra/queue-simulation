@@ -26,4 +26,3 @@ function r = xorshiftr(seed, n)
         end
     end
 end
-end
