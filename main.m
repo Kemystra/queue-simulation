@@ -62,7 +62,7 @@ end
 
 vehicles = []
 for i = 1:number_of_cars
-    v = create_vehicles(interarrival_values, petrol_type_values, refueling_time_values);
+    v = create_vehicle(interarrival_values(i), petrol_type_values(i), refueling_time_values(i));
     vehicles = [vehicles, v]
 end
 
@@ -70,8 +70,8 @@ vehicles = simulate(vehicles, number_of_cars);
 
 % Display results (for testing only)
 for i = 1:length(vehicles)
-    fprintf('Vehicle %d: Lane=%d, Pump=%d, Arrival=%.1f, Wait=%.1f, Initial Line Number=%d\n', ...
-            i, vehicles(i).lane, vehicles(i).pump, ...
+    fprintf('Vehicle %d: Lane=%d, Pump=%d, InterArrival Time=%d, Arrival=%.1f, Wait=%.1f, Initial Line Number=%d\n', ...
+            i, vehicles(i).lane, vehicles(i).pump, vehicles(i).iat, ...
             vehicles(i).arrivalTime, vehicles(i).waitingDuration, ...
             vehicles(i).initialLineNumber);
 end
