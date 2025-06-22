@@ -21,8 +21,11 @@ function vehicles = simulate(vehicles, total_vehicles)
         if strcmp(next_event, 'arrival') && ~vehicle_finished
             selected_lane = select_lane(lanes);
             vehicles(i).lane = selected_lane;
+
             time_delta = next_arrival;
-            vehicles(i).arrivalTime = current_time + time_delta;
+            current_time = current_time + time_delta;
+
+            vehicles(i).arrivalTime = current_time;
             [lanes(selected_lane), vehicles] = handle_vehicle_arrival(lanes(selected_lane), i, vehicles, current_time);
             lanes = update_pump_service_duration(lanes, time_delta);
 
@@ -36,13 +39,12 @@ function vehicles = simulate(vehicles, total_vehicles)
         % Handle departure
         elseif strcmp(next_event, 'departure')
             time_delta = next_departure;
+            current_time = current_time + time_delta;
+
             [lanes(lane_idx), vehicles] = handle_vehicle_departure(lanes(lane_idx), pump_idx, vehicles, current_time);
             vehicle_served = vehicle_served + 1;
             next_arrival = next_arrival - time_delta;
         end
-
-        % Advance time
-        current_time = current_time + time_delta;
 
         % Update waiting duration for queued vehicles
         for x = 1:2
