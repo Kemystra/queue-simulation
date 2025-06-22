@@ -22,7 +22,7 @@ function table_printing(vehicles)
 
         totalPrice = price * vehicles(i).refuelQuantity;
 
-        printf('  | %14d | %27s  | %16.2f | %15.2f   | %30d | %18d |\n', ...
+        printf('  | %14d | %27s  | %16.2f | %15.2f  |   %30d  | %18d |\n', ...
             i, fuel, vehicles(i).refuelQuantity, totalPrice, ...
             vehicles(i).iatRandomValue, vehicles(i).iat);
     end
@@ -35,7 +35,7 @@ function table_printing(vehicles)
     printf('  +===============================================================+\n');
 
     for i = 1:length(vehicles)
-        printf('  | %12.2f | %11d | %30d |\n', ...
+        printf('  | %12.2f | %11d |  %30d  |\n', ...
             vehicles(i).arrivalTime, vehicles(i).initialLineNumber, vehicles(i).refuelQuantityRandomValue);
     end
 
@@ -46,11 +46,11 @@ function table_printing(vehicles)
 
     for lane = lanes
         printf('  ======== Vehicle Pump Table Lane %d ========\n\n', lane); 
-        printf('  +========================================================================+\n');
-        printf('  | Vehicle Number |           Pump 1          |           Pump 2          |\n');
-        printf('  +------------------------------------------------------------------------+\n');
-        printf('  |                | Refuel Time |  Begin  |  End  | Refuel Time |  Begin  |  End  |\n');
-        printf('  +========================================================================+\n');
+        printf('  +====================================================================================+\n');
+        printf('  | Vehicle Number |              Pump 1             |              Pump 2             |\n');
+        printf('  +------------------------------------------------------------------------------------+\n');
+        printf('  |                | Refuel Time |  Begin  |   End   | Refuel Time |   Begin   |  End  |\n');
+        printf('  +====================================================================================+\n');
 
         for i = 1:length(vehicles)
             v = vehicles(i);
@@ -58,16 +58,16 @@ function table_printing(vehicles)
                 printf('  | %14d |', i);
                 for p = 1:2
                     if v.pump == p
-                        printf('     %8.2f | %5.2f | %4.2f |', v.serviceDuration, v.refuelBegins, v.refuelEnds);
+                        printf('%10.2f   |  %6.2f |  %6.2f |', v.serviceDuration, v.refuelBegins, v.refuelEnds);
                     else
-                        printf('     %8s | %5s | %4s |', '-', '-', '-');
+                        printf('%10s   |  %6s |  %6s |', '-', '-', '-');
                     end
                 end
                 printf('\n');
             end
         end
 
-        printf('  +========================================================================+\n\n');
+        printf('  +====================================================================================+\n\n');
     end
 
     %% Waiting and Time Spent Table
@@ -78,7 +78,7 @@ function table_printing(vehicles)
     for i = 1:length(vehicles)
         waitTime = vehicles(i).waitingDuration;
         timeSpent = vehicles(i).refuelEnds - vehicles(i).arrivalTime;
-        printf('  |     %8.2f |    %8.2f |\n', waitTime, timeSpent);
+        printf('  |     %8.2f |   %8.2f |\n', waitTime, timeSpent);
     end
 
     printf('  +===========================+\n\n\n'); 
