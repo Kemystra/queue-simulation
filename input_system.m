@@ -5,9 +5,49 @@ function [car_num, seed, prng_selection, is_peak_time] = get_user_input()
     print_main_banner();
     printf('Welcome to Queue Simulation\n');
 
-    % Get number of cars
-    car_num = cast(input('Enter no. of cars: '), 'int32');
+    while (true)
+        car_num = cast(input('Enter no. of cars: '), 'int32');
+        if (car_num <= 0)
+            disp('Wrong input format. Please try again');
+            continue;
+        end
+        break;
+    end
 
+    seed = -1;
+    while(true)
+        seed = get_seed_input();
+        if (seed == -1)
+            disp('Wrong input, expected Y or N');
+            continue;
+        end
+        break;
+    end
+
+    is_peak_time = -1;
+    while(true)
+        is_peak_time = get_is_peak_input();
+        if (is_peak_time == -1)
+            disp('Wrong input, expected Y or N');
+            continue;
+        end
+        break;
+    end
+
+
+    prng_selection = -1;
+    while(true)
+        prng_selection = get_prng_input();
+        if (prng_selection == -1)
+            disp('Wrong input, expected Y or N');
+            continue;
+        end
+        break;
+    end
+end
+
+
+function seed = get_seed_input()
     % Get seed or randomize
     seed_decision = getline('Do you want to set your own seed value? [Y/n] : ');
     seed_decision = lower(seed_decision);
@@ -19,10 +59,12 @@ function [car_num, seed, prng_selection, is_peak_time] = get_user_input()
         % rand() returns the number in [0,1)
         seed = rand() * 2^32;
     else
-        error('Wrong input, expected Y or N');
-        return;
+        seed = -1;
     end
+end
 
+
+function is_peak_time = get_is_peak_input()
     peak_time_decision = getline('Is this simulation on peak hours? [Y/n] : ');
     peak_time_decision = lower(peak_time_decision);
     is_peak_time = 0;
@@ -32,12 +74,12 @@ function [car_num, seed, prng_selection, is_peak_time] = get_user_input()
     elseif (strcmp('n', peak_time_decision(1)))
         is_peak_time = false;
     else
-        error('Wrong input, expected Y or N');
-        return;
+        is_peak_time = -1;
     end
+end
 
 
-
+function prng_selection = get_prng_input()
     % Get PRNG selection
     print_rng_banner();
     disp('Please select a PRNG to use');
@@ -55,7 +97,6 @@ function [car_num, seed, prng_selection, is_peak_time] = get_user_input()
         case 3
             prng_selection = 3;
         otherwise
-            error('Wrong input, expected 1 to 3');
-            return;
+            prng_selection = -1;
     end
 end
