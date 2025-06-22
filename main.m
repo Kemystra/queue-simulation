@@ -58,6 +58,8 @@ end
 interarrival_rng = zeros(1, number_of_cars);
 interarrival_values = zeros(1, number_of_cars);
 % fill interarrival rng array
+% The first car arrive at exactly 0, so its interarrival time must also be 0
+% So we start randomizing the value from the 2nd car onwards
 for i = 2:number_of_cars
     interarrival_rng(i) = randomised(number_of_cars + i);
     interarrival_values(i) = get_interarrival_value(randomised(number_of_cars + i));
