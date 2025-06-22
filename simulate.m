@@ -1,3 +1,14 @@
+% This simulation uses the next-event time advance system.
+% The general steps are as follow:
+%
+% 1. Check which events are the nearest in time and store how long before it happens (we call this 'time_delta')
+% 2. Execute the event
+% 3. Advance the all the time states in the simulation by 'time_delta' (e.g: waiting time, service time, etc.)
+%
+% There are only 2 events here: arrival and departure.
+%
+% Note that our code is relatively slow due to a lot of data copying. While we can use references in function, the extent to which we can reference is quite prone to bugs. As such we opted not to use it.
+
 function vehicles = simulate(vehicles, total_vehicles)
     current_time = 0;
     lanes = [create_lane_state(), create_lane_state()];
@@ -8,20 +19,22 @@ function vehicles = simulate(vehicles, total_vehicles)
     vehicle_finished = false;
 
     while vehicle_served < total_vehicles
-        % Check next event
+        % Get the earliest departure from all pumps
         [next_departure, lane_idx, pump_idx] = get_earliest_departures(lanes);
 
+        % If no vehicles left to arrive, we directly only check for departure
         if (next_departure ~= -1 && next_departure < next_arrival) || vehicle_finished
             next_event = 'departure';
         else
             next_event = 'arrival';
         end
 
-        % Handle arrival
+        % Handle arrival (only if there's still vehicle arriving)
         if strcmp(next_event, 'arrival') && ~vehicle_finished
             selected_lane = select_lane(lanes);
             vehicles(i).lane = selected_lane;
 
+            % Advance current time
             time_delta = next_arrival;
             current_time = current_time + time_delta;
 
@@ -66,6 +79,7 @@ function lane = create_lane_state()
         'pumps', [create_pump_state(), create_pump_state()]);
 end
 
+% Compare all the (occupied) pumps, and check which one will have finished the service first
 function [min_time, lane_idx, pump_idx] = get_earliest_departures(lanes)
     min_time = inf;
     lane_idx = -1;
@@ -127,6 +141,7 @@ function [lane, vehicles] = handle_vehicle_departure(lane, pump_idx, vehicles, c
     end
 end
 
+% Helper function to set some crucial data for vehicle arrival
 function vehicles = handle_vehicle_service(v, vehicles, pump_idx, current_time)
     vehicles(v).pump = pump_idx;
     vehicles(v).refuelBegins = current_time;
@@ -144,6 +159,8 @@ function lanes = update_pump_service_duration(lanes, time_delta)
     end
 end
 
+% Optimizing the best lane to select when a new vehicle arrives
+% The 'scoring' is based on the length of the current waiting queue and the availability of pumps inside each lane
 function best_lane = select_lane(lanes)
     best_lane = 1;
     best_score = inf;
