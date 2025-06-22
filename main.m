@@ -1,5 +1,5 @@
 % result format: {car_num, seed, prng_selection};
-[number_of_cars, seed, selected_prng] = input_system()
+[number_of_cars, seed, selected_prng, is_peak_time] = input_system()
 
 randomised = zeros(number_of_cars,3);      % initialise matrix to hold car values
 
