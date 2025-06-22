@@ -16,7 +16,7 @@ function [car_num, seed, prng_selection] = get_user_input()
         seed = uint64(input('Enter your seed value: '));
     elseif (strcmp('n', seed_decision(1)))
         % rand() returns the number in [0,1)
-        seed = rand() * 2^64;
+        seed = rand() * 2^32;
     else
         error('Wrong input, expected Y or N');
         return;

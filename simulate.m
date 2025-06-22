@@ -23,7 +23,7 @@ function vehicles = simulate(vehicles, total_vehicles)
             vehicles(i).lane = selected_lane;
             time_delta = next_arrival;
             vehicles(i).arrivalTime = current_time + time_delta;
-            [lanes(selected_lane), vehicles] = handle_vehicle_arrival(lanes(selected_lane), i, vehicles);
+            [lanes(selected_lane), vehicles] = handle_vehicle_arrival(lanes(selected_lane), i, vehicles, current_time);
             lanes = update_pump_service_duration(lanes, time_delta);
 
             i = i + 1;
@@ -36,7 +36,7 @@ function vehicles = simulate(vehicles, total_vehicles)
         % Handle departure
         elseif strcmp(next_event, 'departure')
             time_delta = next_departure;
-            [lanes(lane_idx), vehicles] = handle_vehicle_departure(lanes(lane_idx), pump_idx, vehicles);
+            [lanes(lane_idx), vehicles] = handle_vehicle_departure(lanes(lane_idx), pump_idx, vehicles, current_time);
             vehicle_served = vehicle_served + 1;
             next_arrival = next_arrival - time_delta;
         end
@@ -88,17 +88,17 @@ function [min_time, lane_idx, pump_idx] = get_earliest_departures(lanes)
     end
 end
 
-function [lane, vehicles] = handle_vehicle_arrival(lane, v, vehicles)
+function [lane, vehicles] = handle_vehicle_arrival(lane, v, vehicles, current_time)
     service_duration = vehicles(v).serviceDuration;
 
     % Check if pump 1 is idle
     if lane.pumps(1).nextDeparture == -1
         lane.pumps(1).nextDeparture = service_duration;
-        vehicles(v).pump = 1;
+        vehicles = handle_vehicle_service(v, vehicles, 1, current_time);
     % Check if pump 2 is idle
     elseif lane.pumps(2).nextDeparture == -1
         lane.pumps(2).nextDeparture = service_duration;
-        vehicles(v).pump = 2;
+        vehicles = handle_vehicle_service(v, vehicles, 2, current_time);
     else
         % Both pumps busy, add to queue
         lane.queue = [lane.queue, v];
@@ -106,7 +106,7 @@ function [lane, vehicles] = handle_vehicle_arrival(lane, v, vehicles)
     end
 end
 
-function [lane, vehicles] = handle_vehicle_departure(lane, pump_idx, vehicles)
+function [lane, vehicles] = handle_vehicle_departure(lane, pump_idx, vehicles, current_time)
     % Check if there are vehicles waiting in queue
     if ~isempty(lane.queue)
         % Get next vehicle from queue (FIFO)
@@ -115,7 +115,7 @@ function [lane, vehicles] = handle_vehicle_departure(lane, pump_idx, vehicles)
 
         % Generate service time for next vehicle
         service_duration = vehicles(v).serviceDuration;
-        vehicles(v).pump = pump_idx;
+        vehicles = handle_vehicle_service(v, vehicles, pump_idx, current_time);
 
         % Assign to the pump that just became free
         lane.pumps(pump_idx).nextDeparture = service_duration;
@@ -123,6 +123,12 @@ function [lane, vehicles] = handle_vehicle_departure(lane, pump_idx, vehicles)
         % No vehicles waiting, set pump to idle
         lane.pumps(pump_idx).nextDeparture = -1;
     end
+end
+
+function vehicles = handle_vehicle_service(v, vehicles, pump_idx, current_time)
+    vehicles(v).pump = pump_idx;
+    vehicles(v).refuelBegins = current_time;
+    vehicles(v).refuelEnds = current_time + vehicles(v).serviceDuration;
 end
 
 function lanes = update_pump_service_duration(lanes, time_delta)
