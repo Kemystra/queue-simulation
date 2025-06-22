@@ -42,13 +42,18 @@ interarrival_values = zeros(1, number_of_cars);
 refueling_amount_rng = randomised(:, 3);
 refueling_amount_values = zeros(1, number_of_cars);
 
+if (is_peak_time)
+  % If is peak time, then increase the randomised num for fuel quantity, so that higher fuel quantity is generated
+  refueling_amount_rng = refueling_amount_rng + 20; % Increase by 20;
+end
+
 for i = 1:number_of_cars
     % Get the random number and get the value according to the probability table
     % Since we have a Nx3 matrix
     % We can access each row with this syntax
-    petrol_type = get_petrol_value(randomised(i, 1));
-    interarrival = get_interarrival_value(randomised(i, 2));
-    refueling_amount = get_refueling_amount_value(randomised(i, 3));
+    petrol_type = get_petrol_value(petrol_type_rng(i));
+    interarrival = get_interarrival_value(interarrival_rng(i));
+    refueling_amount = get_refueling_amount_value(refueling_amount_rng(i));
 
     % Special case for interarrival time
     % The first car will always have this value as zero
