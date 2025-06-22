@@ -1,7 +1,7 @@
 % Input parameter: nothing
 % Output: an array of format [number of cars, seed value, PRNG selection]
 
-function [car_num, seed, prng_selection] = get_user_input()
+function [car_num, seed, prng_selection, is_peak_time] = get_user_input()
     printf('Welcome to Queue Simulator\n');
 
     % Get number of cars
@@ -16,11 +16,26 @@ function [car_num, seed, prng_selection] = get_user_input()
         seed = uint64(input('Enter your seed value: '));
     elseif (strcmp('n', seed_decision(1)))
         % rand() returns the number in [0,1)
-        seed = rand() * 2^64;
+        seed = rand() * 2^32;
     else
         error('Wrong input, expected Y or N');
         return;
     end
+
+    peak_time_decision = getline('Is this simulation on peak hours? [Y/n] : ');
+    peak_time_decision = lower(peak_time_decision);
+    is_peak_time = 0;
+
+    if (strcmp('y', peak_time_decision(1)))
+        is_peak_time = true;
+    elseif (strcmp('n', peak_time_decision(1)))
+        is_peak_time = false;
+    else
+        error('Wrong input, expected Y or N');
+        return;
+    end
+
+
 
     % Get PRNG selection
     disp('Please select a PRNG to use');
