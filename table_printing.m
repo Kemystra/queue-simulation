@@ -7,7 +7,7 @@ function table_printing(vehicles)
     totalRefuelQuantity = 0; 
     maxRefuelQuantity = 0; 
 
-    printf('\n\n  ========  Results of Simulation  ========\n\n'); 
+    printf('\n\n  ========  RESULTS OF SIMULATION  \n\n'); 
     printf('  +==============================================================================================================================================+\n');
     printf('  | Vehicle Number |        Type of Petrol        | Quantity (litre) | Total Price (RM) | Random Num for Inter-Arrival Time | Inter-Arrival Time |\n');
     printf('  +==============================================================================================================================================+\n');
@@ -69,7 +69,7 @@ function table_printing(vehicles)
 
     for l = 1:length(lanes)
         lane = lanes(l);
-        printf('  ======== Vehicle Pump Table Lane %d ========\n\n', lane); 
+        printf('  ========  VEHICLE PUMP LANE %d  ========\n\n', lane); 
         printf('  +====================================================================================+\n');
         % if lane 1, pumps are 1 and 2, if lane 2, pumps are 3 and 4
         if lane == 1
@@ -147,25 +147,29 @@ function table_printing(vehicles)
     % get the highest number and its index pos 
     [maxFuelCount, maxFuelIndex] = max([countFS95, countVP97, countDiesel]); 
 
-    printf('  Average Time Spent in System: %.2f \n', avgTimeSpent);
-    printf('  Average Waiting Time: %.2f \n', avgWaitTime);
-    printf('  Average Refuel Quantity: %.2f \n', avgRefuelQuantity);
-    printf('  Highest Waiting Time: %d \n', maxWaitTime);
-    printf('  Highest Refueling Time: %d \n', maxRefuelQuantity);
-    printf('  Probability of Vehicles That Has to Wait: %.2f \n', probabilityWaitingVehicles);
-    printf('  Most Popular Fuel: %s \n', vehicles(maxFuelIndex).fuelType);
-
-    for l = 1:length(lanes) % for each lane, rather than both of them at the same time 
+    printf('\n\n');
+    % ===== Summary Table =====
+    printf('  ========  EVALUATION OF SIMULATION  ========\n\n');
+    printf('  +=====================================================================+\n');
+    printf('  | %-40s | %-24s |\n', 'Metric', 'Value');
+    printf('  +=====================================================================+\n');
+    printf('  | %-40s | %24.2f |\n', 'Average Time Spent in System', avgTimeSpent);
+    printf('  | %-40s | %24.2f |\n', 'Average Waiting Time', avgWaitTime);
+    printf('  | %-40s | %24.2f |\n', 'Average Refuel Quantity', avgRefuelQuantity);
+    printf('  | %-40s | %24d |\n',   'Highest Waiting Time', maxWaitTime);
+    printf('  | %-40s | %24d |\n',   'Highest Refueling Quantity', maxRefuelQuantity);
+    printf('  | %-40s | %24.2f |\n', 'Probability of Vehicles That Has to Wait', probabilityWaitingVehicles);
+    printf('  | %-40s | %24s |\n',   'Most Popular Fuel', vehicles(maxFuelIndex).fuelType);
+    for l = 1:length(lanes)
         lane = lanes(l);
-        if totalVehicleLane(l) > 0
+        if totalVehicleLane(l) > 0 % checks for vehicles
             avgServiceTime = totalServiceTime(l) / totalVehicleLane(l);
-            printf('  Average service time at Lane %d: %.2f \n', lane, avgServiceTime);
+            printf('  | %-40s | %24.2f |\n', ['Average Service Time Lane ', num2str(lane)], avgServiceTime);
         else
-            printf('  No vehicles at Lane %d.\n', lane);
+            printf('  | %-40s | %24s |\n', ['Average Service Time Lane ', num2str(lane)], 'No vehicles'); % changes to number of the lanes to strings 
         end
     end
-
-    printf('\n\n');
+    printf('  +=====================================================================+\n');
 end
 
 
