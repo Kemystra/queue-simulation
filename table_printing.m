@@ -14,7 +14,9 @@ function table_printing(vehicles)
 
     for i = 1:length(vehicles)
         fuel = vehicles(i).fuelType;
-        switch fuel
+        % checks the fuel type user picked, to set respective price 
+        % keeps count of fuel picked too 
+        switch fuel  
             case 'FuelSave 95'
                 price = petrolPrice(1);
                 countFS95 = countFS95 + 1; 
@@ -28,6 +30,7 @@ function table_printing(vehicles)
                 price = 0;
         end
 
+        % checks for the highest value of refuel quantity 
         if vehicles(i).refuelQuantity > maxRefuelQuantity
             maxRefuelQuantity = vehicles(i).refuelQuantity;
         end
@@ -55,11 +58,12 @@ function table_printing(vehicles)
 
     printf('  +===============================================================+\n\n\n');
 
+
     % tables for the lanes and pumps 
 
+    lanes = [1, 2];
 
-    lanes = [1, 2]; 
-
+    %initialising arrays to keep track of them 
     totalServiceTime = zeros(1, length(lanes));
     totalVehicleLane = zeros(1, length(lanes)); 
 
@@ -67,6 +71,7 @@ function table_printing(vehicles)
         lane = lanes(l);
         printf('  ======== Vehicle Pump Table Lane %d ========\n\n', lane); 
         printf('  +====================================================================================+\n');
+        % if lane 1, pumps are 1 and 2, if lane 2, pumps are 3 and 4
         if lane == 1
             printf('  | Vehicle Number |              Pump 1             |              Pump 2             |\n');
         else
@@ -83,7 +88,8 @@ function table_printing(vehicles)
                 totalServiceTime(l) = totalServiceTime(l) + v.serviceDuration;
 
                 printf('  | %14d |', i);
-                for p = 1:2
+                % simulate.py, only recognises the pumps as 1 or 2 in each lane therefore only check for 1 and 2, not 3 or 4
+                for p = 1:2  
                     if v.pump == p
                         printf('%10.2f   |  %6.2f |  %6.2f |', v.serviceDuration, v.refuelBegins, v.refuelEnds);
                     else
@@ -115,10 +121,12 @@ function table_printing(vehicles)
         totalWaitTime = totalWaitTime + waitTime;
         totalTimeSpent = totalTimeSpent + timeSpent;
 
+        % increment wait vehicles of their wait time is more than 0 (aka currently waiting)
         if waitTime > 0
             waitingVehicles = waitingVehicles + 1;
         end
 
+        % checks for the highest value of wait time 
         if waitTime > maxWaitTime
             maxWaitTime = waitTime;
         end
@@ -136,8 +144,8 @@ function table_printing(vehicles)
     probabilityWaitingVehicles = waitingVehicles / length(vehicles);
     avgRefuelQuantity = totalRefuelQuantity / length(vehicles);
 
-    [maxFuelCount, maxFuelIndex] = max([countFS95, countVP97, countDiesel]); % get the highest number and its index pos 
-    % mostPopularFuel = vehicles(maxFuelIndex).fuelType;
+    % get the highest number and its index pos 
+    [maxFuelCount, maxFuelIndex] = max([countFS95, countVP97, countDiesel]); 
 
     printf('  Average Time Spent in System: %.2f \n', avgTimeSpent);
     printf('  Average Waiting Time: %.2f \n', avgWaitTime);
