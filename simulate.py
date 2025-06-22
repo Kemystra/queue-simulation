@@ -87,11 +87,13 @@ def handle_vehicle_arrival(lane, v, vehicles):
     if lane['pumps'][0]['nextDeparture'] == -1:
         # Assign to pump 1
         lane['pumps'][0]['nextDeparture'] = service_duration
+        vehicles[v]['pump'] = 0
 
     # Check if pump 2 is idle
     elif lane['pumps'][1]['nextDeparture'] == -1:
         # Assign to pump 2
         lane['pumps'][1]['nextDeparture'] = service_duration
+        vehicles[v]['pump'] = 1
 
     else:
         # Both pumps busy, add to queue

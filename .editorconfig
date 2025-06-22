@@ -1,0 +1,4 @@
+root = true
+
+[*.m]
+trim_trailing_whitespace = true

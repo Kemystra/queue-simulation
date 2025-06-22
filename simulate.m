@@ -1,133 +1,159 @@
-% Next event based simulation
+function vehicles = simulate(vehicles, total_vehicles)
+    current_time = 0;
+    lanes = [create_lane_state(), create_lane_state()];
+    next_arrival = 0;
 
-function simulate(&vehicles, totalVehicles)
-    currentTime = 0
-    events = ['nextArrival', 'nextDeparture'];
-    lanes = [laneState(), laneState()]
-    nextArrival = 0;
+    i = 1;
+    vehicle_served = 0;
+    vehicle_finished = false;
 
-    nextEvent = events(1);
-    timeDelta = 0;
-
-    i = 1
-    while(i <= totalVehicles)
+    while vehicle_served < total_vehicles
         % Check next event
-        [nextDeparture, laneIdx, pumpIdx] = getEarliestDepartures(lanes);
-        if (nextDeparture ~= -1 && nextDeparture < nextArrival)
-            nextEvent = 'departure';
+        [next_departure, lane_idx, pump_idx] = get_earliest_departures(lanes);
+
+        if (next_departure ~= -1 && next_departure < next_arrival) || vehicle_finished
+            next_event = 'departure';
         else
-            nextEvent = 'arrival';
+            next_event = 'arrival';
         end
 
-        % Perform arrival, for now just alternate lanes
-        if (strcmp(nextEvent, 'arrival'))
-            selectedLane = mod(i, 2) + 1;
-            timeDelta = nextArrival;
-            handleVehicleArrival(lanes(selectedLane), i, vehicles(i).serviceDuration);
-            updatePumpServiceDuration(lanes, timeDelta)
+        % Handle arrival
+        if strcmp(next_event, 'arrival') && ~vehicle_finished
+            selected_lane = select_lane(lanes);
+            vehicles(i).lane = selected_lane;
+            time_delta = next_arrival;
+            vehicles(i).arrivalTime = current_time + time_delta;
+            [lanes(selected_lane), vehicles] = handle_vehicle_arrival(lanes(selected_lane), i, vehicles);
+            lanes = update_pump_service_duration(lanes, time_delta);
 
-            i = i+1;
-            nextArrival = vehicles(i).iat;
-        elseif (strcmp(nextEvent, 'departure'))
-            timeDelta = nextDeparture;
-            handleVehicleDeparture(lanes(laneIdx), pumpIdx, vehicles(i));
-            nextArrival = nextArrival - timeDelta;
+            i = i + 1;
+            if i <= total_vehicles
+                next_arrival = vehicles(i).iat;
+            else
+                vehicle_finished = true;
+            end
+
+        % Handle departure
+        elseif strcmp(next_event, 'departure')
+            time_delta = next_departure;
+            [lanes(lane_idx), vehicles] = handle_vehicle_departure(lanes(lane_idx), pump_idx, vehicles);
+            vehicle_served = vehicle_served + 1;
+            next_arrival = next_arrival - time_delta;
         end
 
-        % Advance current time by the event duration
-        currentTime = currentTime + timeDelta;
-        updateWaitingDuration(vehicles, timeDelta);
-    end
-end
+        % Advance time
+        current_time = current_time + time_delta;
 
-
-function p = pumpState()
-    p = struct('nextDeparture', -1);
-end
-
-function l = laneState()
-    l = struct('queue', [], 'pumps', [pumpState(), pumpState()])
-end
-
-function [minTime, laneIdx, pumpIdx] = getEarliestDepartures(&lanes)
-    minTime = inf;  % Start with infinity
-    laneIdx = -1;
-    pumpIdx = -1;
-    
-    numLanes = length(lanes);
-    
-    for i = 1:numLanes
-        for j = 1:2  % Each lane has 2 pumps
-            departure = lanes(i).pumps(j).nextDeparture;
-            
-            % Only consider active pumps (not -1)
-            if (departure ~= -1 && departure < minTime)
-                minTime = departure;
-                laneIdx = i;
-                pumpIdx = j;
+        % Update waiting duration for queued vehicles
+        for x = 1:2
+            for j = 1:length(lanes(x).queue)
+                y = lanes(x).queue(j);
+                vehicles(y).waitingDuration = vehicles(y).waitingDuration + time_delta;
             end
         end
     end
-    
-    % Handle case where no pumps are active
-    if minTime == inf
-        minTime = -1;
-        laneIdx = -1;
-        pumpIdx = -1;
+end
+
+function pump = create_pump_state()
+    pump = struct('nextDeparture', -1);
+end
+
+function lane = create_lane_state()
+    lane = struct(...
+        'queue', [], ...
+        'pumps', [create_pump_state(), create_pump_state()]);
+end
+
+function [min_time, lane_idx, pump_idx] = get_earliest_departures(lanes)
+    min_time = inf;
+    lane_idx = -1;
+    pump_idx = -1;
+
+    for i = 1:length(lanes)
+        for j = 1:2
+            departure = lanes(i).pumps(j).nextDeparture;
+
+            if departure ~= -1 && departure < min_time
+                min_time = departure;
+                lane_idx = i;
+                pump_idx = j;
+            end
+        end
+    end
+
+    if min_time == inf
+        min_time = -1;
+        lane_idx = -1;
+        pump_idx = -1;
     end
 end
 
-function handleVehicleArrival(&lane, vehicleIdx, serviceDuration)
+function [lane, vehicles] = handle_vehicle_arrival(lane, v, vehicles)
+    service_duration = vehicles(v).serviceDuration;
+
     % Check if pump 1 is idle
     if lane.pumps(1).nextDeparture == -1
-        % Assign to pump 1
-        lane.pumps(1).nextDeparture = serviceDuration;
-        
+        lane.pumps(1).nextDeparture = service_duration;
+        vehicles(v).pump = 1;
     % Check if pump 2 is idle
     elseif lane.pumps(2).nextDeparture == -1
-        % Assign to pump 2
-        lane.pumps(2).nextDeparture = serviceDuration;
-        
+        lane.pumps(2).nextDeparture = service_duration;
+        vehicles(v).pump = 2;
     else
         % Both pumps busy, add to queue
-        lane.queue = [lane.queue, vehicleIdx];
+        lane.queue = [lane.queue, v];
+        vehicles(v).initialLineNumber = length(lane.queue);
     end
 end
 
-function handleVehicleDeparture(lane, pumpIdx, v)
+function [lane, vehicles] = handle_vehicle_departure(lane, pump_idx, vehicles)
     % Check if there are vehicles waiting in queue
     if ~isempty(lane.queue)
         % Get next vehicle from queue (FIFO)
-        nextVehicleIdx = lane.queue(1);
-        lane.queue = lane.queue(2:end);  % Remove from queue
-        
+        v = lane.queue(1);
+        lane.queue = lane.queue(2:end);
+
         % Generate service time for next vehicle
-        serviceDuration = v.serviceDuration;
-        
+        service_duration = vehicles(v).serviceDuration;
+        vehicles(v).pump = pump_idx;
+
         % Assign to the pump that just became free
-        lane.pumps(pumpIdx).nextDeparture = serviceDuration;
-        
+        lane.pumps(pump_idx).nextDeparture = service_duration;
     else
         % No vehicles waiting, set pump to idle
-        lane.pumps(pumpIdx).nextDeparture = -1;
+        lane.pumps(pump_idx).nextDeparture = -1;
     end
 end
 
-function updatePumpServiceDuration(&lanes, timeDelta)
-    numLanes = length(lanes);
-    
-    for i = 1:numLanes
-        for j = 1:2  % Each lane has 2 pumps
+function lanes = update_pump_service_duration(lanes, time_delta)
+    for i = 1:length(lanes)
+        for j = 1:2
             % Only subtract from active pumps (not idle)
             if lanes(i).pumps(j).nextDeparture ~= -1
-                lanes(i).pumps(j).nextDeparture = lanes(i).pumps(j).nextDeparture - timeDelta;
+                lanes(i).pumps(j).nextDeparture = lanes(i).pumps(j).nextDeparture - time_delta;
             end
         end
     end
 end
 
-function updateWaitingDuration(&vehicles, timeDelta)
-    for i = 1:length(vehicles)
-        vehicles(i).waitingDuration = vehicles(i).waitingDuration + timeDelta;
+function best_lane = select_lane(lanes)
+    best_lane = 1;
+    best_score = inf;
+
+    for i = 1:length(lanes)
+        % Count available (idle) pumps
+        available_pumps = 0;
+        for j = 1:2
+            if lanes(i).pumps(j).nextDeparture == -1
+                available_pumps = available_pumps + 1;
+            end
+        end
+
+        score = length(lanes(i).queue) - available_pumps;
+
+        if score < best_score
+            best_score = score;
+            best_lane = i;
+        end
     end
 end
