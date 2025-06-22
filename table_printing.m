@@ -102,7 +102,7 @@ function table_printing(vehicles)
     totalWaitTime = 0;
     totalTimeSpent = 0; 
     waitingVehicles = 0;
-    maxWaitTime = 0 
+    maxWaitTime = 0;
 
     printf('  +============================================+\n');
     printf('  | Vehicle Number | Waiting Time | Time Spent |\n');
