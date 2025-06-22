@@ -1,21 +1,5 @@
-user_input = input_system()
-
-% Process user input, generate random numbers accordingly, and generate a list of cars
-% Note that at this point the Car object must already have its appropriate value
-
-% This is the format of a Vehicle object. Replace variables with the appropriate value when constructing a Vehicle
-% vehicle = struct('iat', iat,'fuelType', fuelType,'refuelQuantity', refuelQuantity,'arrivalTime', 0,'waitingDuration', 0,'initialLineNumber', 0);
-
-simulate(vehicles);
-
-% Print cars data
-table_printing(vehicles);
-
-%   BELOW THIS IS THE RNG SHITEEEEE
-
-number_of_cars = 10;                     % Number of cars to generate, replace this with user input
-selected_prng = 1;                      % Selected PRNG, replace this with user input
-seed = rand();                          % randomise the seed
+% result format: {car_num, seed, prng_selection};
+[number_of_cars, seed, selected_prng] = input_system()
 
 randomised = zeros(number_of_cars,3);      % initialise matrix to hold car values
 
@@ -74,4 +58,20 @@ for i = 1:number_of_cars
     refueling_time_rng(i) = randomised(2*number_of_cars + i);
     refueling_time_values(i) = get_refueling_time_value(randomised(2*number_of_cars + i));
     fprintf('Car %d, refueling time: %d, %d\n', i, refueling_time_rng(i), refueling_time_values(i));
+end
+
+vehicles = []
+for i = 1:number_of_cars
+    v = create_vehicles(interarrival_values, petrol_type_values, refueling_time_values);
+    vehicles = [vehicles, v]
+end
+
+vehicles = simulate(vehicles, number_of_cars);
+
+% Display results (for testing only)
+for i = 1:length(vehicles)
+    fprintf('Vehicle %d: Lane=%d, Pump=%d, Arrival=%.1f, Wait=%.1f, Initial Line Number=%d\n', ...
+            i, vehicles(i).lane, vehicles(i).pump, ...
+            vehicles(i).arrivalTime, vehicles(i).waitingDuration, ...
+            vehicles(i).initialLineNumber);
 end

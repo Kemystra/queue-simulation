@@ -6,7 +6,7 @@ function r = permcg(seed, n)
     modulus = uint32(2^32);
 
     % Initialize state
-    state = uint32(seed*2^32);
+    state = uint32(seed);
     r = zeros(n,3);
 
     for k = 1:n*3

@@ -1,7 +1,7 @@
 % Input parameter: nothing
 % Output: an array of format [number of cars, seed value, PRNG selection]
 
-function result = get_user_input()
+function [car_num, seed, prng_selection] = get_user_input()
     printf('Welcome to Queue Simulator\n');
 
     % Get number of cars
@@ -41,6 +41,4 @@ function result = get_user_input()
             error('Wrong input, expected 1 to 3');
             return;
     end
-
-    result = {car_num, seed, prng_selection};
 end
