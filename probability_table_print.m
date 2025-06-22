@@ -11,7 +11,7 @@ function probability_table_print()
     printf('  +--------------------------------------------------------------+ \n');
 
     for i = 1:numel(IAT)
-        printf('  |%18d | %10.2f   | %4.2f | %20s |\n', IAT(i), IATProbability(i), IATcdf(i), IATrange{i});
+        printf('  |%18d  | %10.2f  | %4.2f | %18s |\n', IAT(i), IATProbability(i), IATcdf(i), IATrange{i});
     end
 
     printf('  +--------------------------------------------------------------+ \n');
@@ -28,8 +28,8 @@ function probability_table_print()
     printf('  |        Type of Petrol        | Probability | CDF |  Random Number Range | Price Per Litre |\n');
     printf('  +-------------------------------------------------------------------------------------------+ \n');
 
-    for i = 1:numel(petrol)
-        printf('  |%27s | %10.2f   | %4.2f | %20s | %15.2f |\n', petrol{i}, petrolProbability(i), petrolCDF(i), petrolRange{i}, petrolPrice(i));
+    for i = 1:numel(petrolType)
+        printf('  |%29s | %10.2f  | %4.2f| %20s | %15.2f |\n', petrolType{i}, petrolProbability(i), petrolCDF(i), petrolRange{i}, petrolPrice(i));
     end
 
     printf('  +-------------------------------------------------------------------------------------------+ \n');
@@ -46,7 +46,7 @@ function probability_table_print()
     printf('  +-------------------------------------------------------+ \n');
 
     for i = 1:numel(refuel)
-        printf('  |%15d | %10.2f   | %4.2f | %17s |\n', refuel(i), refuelProbability(i), refuelCDF(i), refuelRange{i});
+        printf('  |%15d | %10.2f   | %4.2f| %15s |\n', refuel(i), refuelProbability(i), refuelCDF(i), refuelRange{i});
     end
 
     printf('  +-------------------------------------------------------+ \n');
